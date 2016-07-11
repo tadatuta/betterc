@@ -1,0 +1,52 @@
+{
+  "name": "betterc",
+  "version": "1.0.0",
+  "description": "Like rc but better",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "lodash": "^4.13.1",
+    "minimist": "^1.2.0",
+    "node-eval": "^1.0.2",
+    "os-homedir": "^1.0.1",
+    "pinkie-promise": "^2.0.1"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.0.1",
+    "eslint-config-pedant": "^0.7.0",
+    "jscs": "^3.0.6",
+    "mock-fs": "^3.11.0",
+    "nyc": "^7.0.0"
+  },
+  "scripts": {
+    "test": "npm run lint && npm run unit",
+    "unit": "ava",
+    "lint": "eslint . && jscs .",
+    "cover": "nyc ava",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "ava": {
+    "files": [
+      "test/async.js",
+      "test/sync.js"
+    ],
+    "serial": true
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tadatuta/betterc.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tadatuta/betterc/issues"
+  },
+  "keywords": [
+    "rc",
+    "config"
+  ],
+  "author": "Vladimir Grinenko",
+  "license": "MIT"
+}
