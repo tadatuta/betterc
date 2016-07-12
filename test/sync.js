@@ -3,9 +3,7 @@
 const path = require('path');
 const test = require('ava');
 const mock = require('mock-fs');
-const mockFsHelper = require(path.join(__dirname, 'lib', 'mock-fs-helper'));
 const rc = require('../').sync;
-const nodeModules = mockFsHelper.duplicateFSInMemory(path.resolve('..', 'node_modules'));
 const osHomedir = require('os-homedir')();
 
 const initialCwd = process.cwd();
@@ -16,25 +14,19 @@ test.afterEach(() => {
 });
 
 test('should return empty config if no config found', t => {
-    mock({
-        node_modules: nodeModules
-    });
+    mock({});
 
     t.deepEqual(rc(), [{}]);
 });
 
 test('should return config defaults', t => {
-    mock({
-        node_modules: nodeModules
-    });
+    mock({});
 
     t.deepEqual(rc({ defaults: { test: 1 } }), [{ test: 1 }]);
 });
 
 test('should find configs in home dir', t => {
-    const mockOpts = {
-        node_modules: nodeModules
-    };
+    const mockOpts = {};
 
     const sources = [
         ['.config', 'bem', 'config'], // ~/.config/bem/config
@@ -59,9 +51,7 @@ test('should find configs in home dir', t => {
 });
 
 test('should find configs with custom name in home dir', t => {
-    const mockOpts = {
-        node_modules: nodeModules
-    };
+    const mockOpts = {};
 
     const sources = [
         ['.config', 'bla', 'config'], // ~/.config/bla/config
@@ -87,7 +77,6 @@ test('should find configs with custom name in home dir', t => {
 
 test('should find config by argv', t => {
     mock({
-        node_modules: nodeModules,
         '/test/.bemrc': '{"test": 1}'
     });
 
@@ -100,7 +89,6 @@ test('should find config by argv', t => {
 
 test('should find config by argv passed via opts', t => {
     mock({
-        node_modules: nodeModules,
         '/test/.bemrc': '{"test": 1}'
     });
 
@@ -115,7 +103,6 @@ test('should find config by argv passed via opts', t => {
 
 test('should find config by ENV', t => {
     mock({
-        node_modules: nodeModules,
         '/test/.bemrc': '{"test": 1}'
     });
 
@@ -131,9 +118,7 @@ test('should find config by ENV', t => {
 });
 
 test('should use config field passed via ENV', t => {
-    mock({
-        node_modules: nodeModules,
-    });
+    mock({});
 
     process.env.bem_test = 1;
 
@@ -146,7 +131,6 @@ test('should find config by ENV with different name', t => {
     const name = 'ololo';
 
     mock({
-        node_modules: nodeModules,
         '/test/.bemrc': '{"test": 1}'
     });
 
@@ -163,7 +147,6 @@ test('should find config by ENV with different name', t => {
 
 test('should find config in current folder', t => {
     mock({
-        node_modules: nodeModules,
         '.bemrc': '{"test": 1}'
     });
 
@@ -172,7 +155,6 @@ test('should find config in current folder', t => {
 
 test('should find config with custom name in current folder', t => {
     mock({
-        node_modules: nodeModules,
         '.ololorc': '{"test": 1}'
     });
 
@@ -181,7 +163,6 @@ test('should find config with custom name in current folder', t => {
 
 test('should find configs in different folders', t => {
     mock({
-        node_modules: nodeModules,
         grandparent: {
             parent: {
                 cwd: {
@@ -205,7 +186,6 @@ test('should find configs in different folders', t => {
 
 test('should find configs in custom cwd', t => {
     mock({
-        node_modules: nodeModules,
         grandparent: {
             parent: {
                 cwd: {
@@ -227,7 +207,6 @@ test('should find configs in custom cwd', t => {
 
 test('should use .bemrc from /', t => {
     mock({
-        node_modules: nodeModules,
         '/.bemrc': '{"test": "root"}',
     });
 
@@ -239,7 +218,6 @@ test('should use .bemrc from /', t => {
 
 test('should traverse to fsRoot', t => {
     mock({
-        node_modules: nodeModules,
         '/.bemrc': '{"test": "root"}',
         '.bemrc': '{"test": 1}'
     });
@@ -252,7 +230,6 @@ test('should traverse to fsRoot', t => {
 
 test('should use fsHome', t => {
     const mockOpts = {
-        node_modules: nodeModules,
         home: {
             '.bemrc': '{"test": 1}'
         }
@@ -271,7 +248,6 @@ test('should use fsHome', t => {
 test('should filter same configs in proper order', t => {
     const mockOpts = {
         '/.bemrc': '{"test": "root"}',
-        node_modules: nodeModules
     };
 
     const source = path.join(osHomedir, '.bemrc');
@@ -289,7 +265,6 @@ test('should filter same configs in proper order', t => {
 
 test('should find different types of configs', t => {
     const mockOpts = {
-        node_modules: nodeModules,
         '/.bemrc': '{"test": "root"}',
         '/argv/.bemrc': '{"test": "argv"}',
         '/env/config/.bemrc': '{"test": "env"}',
