@@ -57,8 +57,9 @@ betterc({ // or betterc.sync for sync version
 
 ## Configuration file format
 
-Configuration files (e.g. `.appnamerc`) may be only in [json](http://json.org/example) format:
+Configuration files (e.g. `.appnamerc`) may be in [json](http://json.org/example) or CommonJS module format:
 
+### JSON
 ```js
 {
   "dependsOn": "0.10.0",
@@ -76,6 +77,26 @@ Configuration files (e.g. `.appnamerc`) may be only in [json](http://json.org/ex
     }
   }
 }
+```
+
+### CommonJS
+```js
+module.exports = {
+  "dependsOn": "0.10.0",
+  "commands": {
+    "www": "./commands/www",
+    "console": "./commands/repl"
+  },
+  "generators": {
+    "options": {
+      "engine": "ejs"
+    },
+    "modules": {
+      "new": "generate-new",
+      "backend": "generate-backend"
+    }
+  }
+};
 ```
 
 > Since env variables do not have a standard for types, your application needs be prepared for strings.
