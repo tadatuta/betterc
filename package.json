@@ -1,6 +1,6 @@
 {
   "name": "betterc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Like rc but better",
   "main": "index.js",
   "directories": {
