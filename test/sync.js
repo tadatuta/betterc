@@ -8,6 +8,19 @@ const osHomedir = require('os-homedir')();
 
 const initialCwd = process.cwd();
 
+// Adds extention to the last item of an array representing fs path
+function addExts(sources) {
+    return sources.reduce((acc, pathArr) => {
+        ['', '.json', '.js'].forEach(ext => {
+            const current = [].concat(pathArr);
+            current[current.length - 1] += ext;
+            acc.push(current);
+        });
+
+        return acc;
+    }, []);
+}
+
 test.afterEach(() => {
     mock.restore();
     process.chdir(initialCwd);
@@ -28,11 +41,13 @@ test('should return config defaults', t => {
 test('should find configs in home dir', t => {
     const mockOpts = {};
 
-    const sources = [
+    const sources = addExts([
         ['.config', 'bem', 'config'], // ~/.config/bem/config
+        // TODO: add test for this case
+        // ['.config', 'bem'],            // ~/.config/bem
         ['.bem', 'config'],           // ~/.bem/config
         ['.bemrc']                    // ~/.bemrc
-    ];
+    ]);
 
     sources.forEach((pathToConf, idx) => {
         mockOpts[path.join(osHomedir, ...pathToConf)] = `{"test": ${idx}}`;
@@ -53,11 +68,11 @@ test('should find configs in home dir', t => {
 test('should find configs with custom name in home dir', t => {
     const mockOpts = {};
 
-    const sources = [
+    const sources = addExts([
         ['.config', 'bla', 'config'], // ~/.config/bla/config
         ['.bla', 'config'], // ~/.bla/config
         ['.blarc']          // ~/.blarc
-    ];
+    ]);
 
     sources.forEach((pathToConf, idx) => {
         mockOpts[path.join(osHomedir, ...pathToConf)] = `{"test": ${idx}}`;
@@ -151,6 +166,33 @@ test('should find config in current folder', t => {
     });
 
     t.deepEqual(rc(), [{}, { test: 1, __source: path.join(process.cwd(), '.bemrc') }]);
+});
+
+test('should find configs with different exts in current folder', t => {
+    mock({
+        '.bem': {
+            'config.json': '{"test": 2}',
+            'config': '{"test": 1}',
+            'config.js': '{"test": 3}'
+        },
+        '.bemrc.json': '{"test": 5}',
+        '.bemrc': '{"test": 4}',
+        '.bemrc.js': '{"test": 6}'
+    });
+
+    const expected = [
+        {},
+        { test: 1, __source: path.join(process.cwd(), '.bem/config') },
+        { test: 2, __source: path.join(process.cwd(), '.bem/config.json') },
+        { test: 3, __source: path.join(process.cwd(), '.bem/config.js') },
+        { test: 4, __source: path.join(process.cwd(), '.bemrc') },
+        { test: 5, __source: path.join(process.cwd(), '.bemrc.json') },
+        { test: 6, __source: path.join(process.cwd(), '.bemrc.js') }
+    ];
+
+    const actual = rc();
+
+    t.deepEqual(actual, expected);
 });
 
 test('should find config with custom name in current folder', t => {

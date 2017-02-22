@@ -25,11 +25,20 @@ Given your application name (`appname`), `betterc` will look in all the obvious 
   * `$HOME/.${appname}/config`
   * `$HOME/.config/${appname}`
   * `$HOME/.config/${appname}/config`
-  * a local `.${appname}rc` and all found looking in `./ ../ ../../ ../../../` etc.
+  * a local `.${appname}/config` and `.${appname}rc` and all found looking in `./ ../ ../../ ../../../` etc.
   * if you passed environment variable `${appname}_config` then from that file
   * if you passed an option `--config file` then from that file
   * environment variables prefixed with `${appname}_`
     * or use "\_\_" to indicate nested properties <br/> _(e.g. `appname_foo__bar__baz` => `foo.bar.baz`)_
+
+All config files may have or have not `json` or `js` extentions in following order:
+```js
+[
+  `.${appname}rc`,
+  `.${appname}rc.json`,
+  `.${appname}rc.js`
+]
+```.
 
 All configuration sources that were found will be added to result array.
 
