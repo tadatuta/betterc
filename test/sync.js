@@ -351,3 +351,54 @@ test('should find different types of configs', t => {
     delete process.env.bem_config;
     process.argv.pop();
 });
+
+test('extendBy option should be last in list', t => {
+    const mockOpts = {
+        '/.bemrc': '{"test": "root"}',
+        '/argv/.bemrc': '{"test": "argv"}',
+        '/env/config/.bemrc': '{"test": "env"}',
+        grandparent: {
+            parent: {
+                cwd: {
+                    '.bemrc': '{"test": 1}'
+                },
+                '.bemrc': '{"test": 2}'
+            },
+            '.bemrc': '{"test": 3}'
+        }
+    };
+
+    mockOpts[path.join(osHomedir, '.bemrc')] = '{"test": "home"}';
+
+    mock(mockOpts);
+
+    process.chdir(path.join('grandparent', 'parent', 'cwd'));
+
+    process.env.bem_test = 4;
+    process.env.bem_config = '/env/config/.bemrc';
+    process.argv.push('--config=/argv/.bemrc');
+
+    const expected = [
+        { test: 'default' },
+        { test: 'root', __source: path.resolve('/', '.bemrc') },
+        { test: 'home', __source: path.join(osHomedir, '.bemrc') },
+        { test: 3, __source: path.resolve(initialCwd, 'grandparent', '.bemrc') },
+        { test: 2, __source: path.resolve(initialCwd, 'grandparent', 'parent', '.bemrc') },
+        { test: 1, __source: path.resolve(initialCwd, 'grandparent', 'parent', 'cwd', '.bemrc') },
+        { test: 'env', __source: path.resolve('/', 'env', 'config', '.bemrc') },
+        { test: 'argv', __source: path.resolve('/', 'argv', '.bemrc') },
+        { test: '4', config: '/env/config/.bemrc' },
+        { test: 'top most extention' }
+    ];
+
+    const actual = rc({
+        defaults: { test: 'default' },
+        extendBy: { test: 'top most extention' }
+    });
+
+    t.deepEqual(actual, expected);
+
+    delete process.env.bem_test;
+    delete process.env.bem_config;
+    process.argv.pop();
+});

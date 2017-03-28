@@ -58,8 +58,14 @@ betterc({ // or betterc.sync for sync version
     fsRoot: '/my-root',     // custom '/' directory, used in tests
     fsHome: '/my-home',     // custom $HOME directory, used in tests
 
+    // initial config to be extended by all the others
     defaults: {
         foo: 'baz'
+    },
+
+    // config which will override all the others
+    extendBy: {
+        foo: 'will-override-baz'
     }
 });
 ```
