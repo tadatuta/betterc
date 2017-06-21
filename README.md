@@ -38,7 +38,7 @@ All config files may have or have not `json` or `js` extentions in following ord
   `.${appname}rc.json`,
   `.${appname}rc.js`
 ]
-```.
+```
 
 All configuration sources that were found will be added to result array.
 
